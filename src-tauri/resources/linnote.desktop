@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Linnote
+Comment=OneNote desktop client for Linux
+Exec=linnote %u
+Icon=linnote
+Terminal=false
+Type=Application
+Categories=Office;
+MimeType=x-scheme-handler/onenote;
+StartupWMClass=linnote

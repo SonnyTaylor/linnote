@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Linnote Settings</title>
+    <link rel="stylesheet" href="styles/settings.css" />
+  </head>
+  <body>
+    <div class="settings">
+      <h1>Settings</h1>
+
+      <section>
+        <h2>General</h2>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <label for="close_to_tray">Minimize to tray on close</label>
+            <p class="description">
+              When enabled, closing the window hides Linnote to the system tray
+              instead of quitting.
+            </p>
+          </div>
+          <input type="checkbox" id="close_to_tray" checked />
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <label for="start_minimized">Start minimized</label>
+            <p class="description">
+              Launch Linnote hidden in the system tray.
+            </p>
+          </div>
+          <input type="checkbox" id="start_minimized" />
+        </div>
+      </section>
+
+      <section>
+        <h2>Appearance</h2>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <label for="theme">Theme</label>
+            <p class="description">Controls the window appearance.</p>
+          </div>
+          <select id="theme">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <label for="zoom_level">Zoom level</label>
+            <p class="description">Page zoom (25% – 500%).</p>
+          </div>
+          <div class="zoom-controls">
+            <button id="zoom_down">−</button>
+            <span id="zoom_display">100%</span>
+            <button id="zoom_up">+</button>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Advanced</h2>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <label for="start_url">Start URL</label>
+            <p class="description">
+              The OneNote page to load on startup. Leave empty for default.
+            </p>
+          </div>
+          <input
+            type="url"
+            id="start_url"
+            placeholder="https://www.onenote.com/notebooks"
+          />
+        </div>
+      </section>
+
+      <div class="actions">
+        <span class="version" id="version"></span>
+        <button id="save" class="primary">Save</button>
+      </div>
+    </div>
+
+    <script src="scripts/settings.js"></script>
+  </body>
+</html>

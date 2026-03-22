@@ -1,0 +1,35 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-window",
+  "description": "Capabilities for the main OneNote webview",
+  "windows": ["main"],
+  "remote": {
+    "urls": [
+      "https://*.onenote.com/*",
+      "https://*.office.com/*",
+      "https://*.office.net/*",
+      "https://*.office365.com/*",
+      "https://*.officeapps.live.com/*",
+      "https://*.sharepoint.com/*",
+      "https://*.live.com/*",
+      "https://*.microsoft.com/*",
+      "https://*.microsoftonline.com/*",
+      "https://*.microsoft365.com/*"
+    ]
+  },
+  "permissions": [
+    "core:default",
+    "core:event:default",
+    "core:window:default",
+    "opener:default",
+    "notification:default",
+    "notification:allow-is-permission-granted",
+    "notification:allow-request-permission",
+    "notification:allow-notify",
+    "store:default",
+    "window-state:default",
+    "global-shortcut:default",
+    "deep-link:default",
+    "process:default"
+  ]
+}
