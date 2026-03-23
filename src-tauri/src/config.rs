@@ -7,6 +7,7 @@ pub const ALLOWED_DOMAINS: &[&str] = &[
     // OneNote core
     "onenote.com",
     "onenote.officeapps.live.com",
+    "onenote.cloud.microsoft",
     // Microsoft auth (personal + org/edu)
     "microsoft.com",
     "microsoftonline.com",
@@ -36,7 +37,14 @@ pub const ALLOWED_DOMAINS: &[&str] = &[
 
 pub const DEFAULT_URL: &str = "https://www.onenote.com/notebooks";
 
+#[cfg(target_os = "linux")]
 pub const APP_USER_AGENT: &str = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
+#[cfg(target_os = "windows")]
+pub const APP_USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
+#[cfg(target_os = "macos")]
+pub const APP_USER_AGENT: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
 /// Domains commonly used by federated identity providers (school/org SSO).
 /// These are allowed during auth flows.
@@ -50,9 +58,16 @@ pub const FEDERATED_AUTH_PATTERNS: &[&str] = &[
     "federation.",
 ];
 
-/// Check if a URL's host matches any of the allowed domains (including subdomains),
-/// or if it looks like a federated SSO endpoint (common for school/org accounts).
+/// Check if a URL should be allowed to navigate within the webview.
+/// Allows internal browser schemes, Microsoft domains, and federated SSO endpoints.
 pub fn is_allowed_domain(url: &url::Url) -> bool {
+    // Always allow internal browser schemes (about:blank, data:, blob:, etc.)
+    // WebView2 on Windows uses these extensively during page load.
+    let scheme = url.scheme();
+    if scheme != "http" && scheme != "https" {
+        return true;
+    }
+
     let host = match url.host_str() {
         Some(h) => h,
         None => return false,
@@ -112,6 +127,11 @@ mod tests {
         assert!(is_allowed_domain(&Url::parse("https://login.edustar.vic.edu.au/adfs/oauth2/authorize").unwrap()));
         assert!(is_allowed_domain(&Url::parse("https://sso.university.edu/saml2/idp/SSOService").unwrap()));
         assert!(is_allowed_domain(&Url::parse("https://sts.myschool.edu/auth/realms/master").unwrap()));
+
+        // Internal browser schemes (critical for WebView2 on Windows)
+        assert!(is_allowed_domain(&Url::parse("about:blank").unwrap()));
+        assert!(is_allowed_domain(&Url::parse("data:text/html,hello").unwrap()));
+        assert!(is_allowed_domain(&Url::parse("blob:https://onenote.com/abc").unwrap()));
 
         // External sites should still be blocked
         assert!(!is_allowed_domain(&Url::parse("https://www.google.com").unwrap()));

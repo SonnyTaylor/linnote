@@ -26,13 +26,19 @@ pub fn init(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     }));
 
     let mut builder = WebviewWindowBuilder::new(app, "main", url)
-        .title("Linnote")
+        .title("LinNote")
         .inner_size(1200.0, 800.0)
         .min_inner_size(800.0, 600.0)
         .user_agent(config::APP_USER_AGENT)
         .zoom_hotkeys_enabled(true)
         .initialization_script(INJECT_JS)
-        .on_navigation(|url| config::is_allowed_domain(&url));
+        .on_navigation(|url| {
+            let allowed = config::is_allowed_domain(&url);
+            if !allowed {
+                eprintln!("[Linnote] Blocked navigation to: {}", url);
+            }
+            allowed
+        });
 
     // Only set visible if not starting minimized
     if start_minimized {
