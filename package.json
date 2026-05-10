@@ -4,7 +4,9 @@
   "private": true,
   "description": "OneNote desktop client for Linux",
   "scripts": {
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",

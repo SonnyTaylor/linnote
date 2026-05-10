@@ -11,14 +11,18 @@ pub const ALLOWED_DOMAINS: &[&str] = &[
     // Microsoft auth (personal + org/edu)
     "microsoft.com",
     "microsoftonline.com",
+    "microsoftonline-p.com",
+    "microsoftazuread-sso.com",
     "live.com",
     "login.windows.net",
+    "windows.net",
     "msauth.net",
     "msftauth.net",
     "msftcloudes.com",
     "msidentity.com",
     "aadcdn.msftauth.net",
     "aadcdn.msauthimages.net",
+    "secure.aadcdn.microsoftonline-p.com",
     // Office 365 / SharePoint / OneDrive
     "office.com",
     "office.net",
@@ -29,10 +33,23 @@ pub const ALLOWED_DOMAINS: &[&str] = &[
     "outlook.com",
     "svc.ms",
     // CDN and auxiliary Microsoft services
+    "azure.com",
     "azure.net",
     "azureedge.net",
     "microsoft365.com",
     "ms365.eu",
+    "msocdn.com",
+    "msa.akamaized.net",
+    "activedirectory.windowsazure.com",
+    // Sovereign cloud variants (China / Gov)
+    "chinacloudapi.cn",
+    "partner.microsoftonline.cn",
+    "microsoftonline.us",
+    // Telemetry / infrastructure (blocking these can break page load)
+    "msftconnecttest.com",
+    "browser.pipe.aria.microsoft.com",
+    "browser.events.data.microsoft.com",
+    "nleditor.osi.office.net",
 ];
 
 pub const DEFAULT_URL: &str = "https://www.onenote.com/notebooks";

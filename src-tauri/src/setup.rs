@@ -34,8 +34,11 @@ pub fn init(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         .initialization_script(INJECT_JS)
         .on_navigation(|url| {
             let allowed = config::is_allowed_domain(&url);
-            if !allowed {
-                eprintln!("[Linnote] Blocked navigation to: {}", url);
+            let host = url.host_str().unwrap_or("(no host)");
+            if allowed {
+                eprintln!("[Linnote] Nav allowed: {} -> {}", host, url);
+            } else {
+                eprintln!("[Linnote] Nav BLOCKED: {} -> {}", host, url);
             }
             allowed
         });
@@ -47,11 +50,32 @@ pub fn init(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
     let main_window = builder.build()?;
 
+    // Linux: allow third-party cookies so Microsoft silent auth (iframe-based
+    // token refresh) doesn't get stuck in an infinite "We couldn't sign you in" loop.
+    #[cfg(target_os = "linux")]
+    {
+        use webkit2gtk::{
+            CookieAcceptPolicy, CookieManagerExt, WebContextExt, WebViewExt,
+            WebsiteDataManagerExt,
+        };
+        let _ = main_window.with_webview(|webview| {
+            let wv = webview.inner();
+            if let Some(context) = wv.web_context() {
+                if let Some(data_manager) = context.website_data_manager() {
+                    if let Some(cookie_manager) = data_manager.cookie_manager() {
+                        cookie_manager.set_accept_policy(CookieAcceptPolicy::Always);
+                        eprintln!("[Linnote] Linux: cookie accept policy set to Always");
+                    }
+                }
+            }
+        });
+    }
+
     // Restore zoom level if not default
     if (zoom_level - 1.0).abs() > f64::EPSILON {
         let zoom = zoom_level;
         let win = main_window.clone();
-        tauri::async_runtime::spawn(async move {
+        tauri::async_runtime::spawn_blocking(move || {
             // Small delay to let the page start loading
             std::thread::sleep(std::time::Duration::from_millis(500));
             let _ = win.eval(&format!(

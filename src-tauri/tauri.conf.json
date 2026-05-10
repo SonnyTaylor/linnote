@@ -23,7 +23,6 @@
       "icons/icon.png"
     ],
     "targets": ["appimage", "deb", "rpm"],
-    "category": "Office",
     "shortDescription": "OneNote desktop client for Linux",
     "longDescription": "Linnote is a native desktop wrapper for Microsoft OneNote Web, bringing full OneNote functionality to Linux with desktop integration features."
   },
