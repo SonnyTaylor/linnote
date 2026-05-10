@@ -25,3 +25,38 @@ pub async fn get_zoom(app: AppHandle) -> Result<f64, String> {
         .and_then(|v| v.as_f64())
         .unwrap_or(1.0))
 }
+
+#[tauri::command]
+pub async fn window_minimize(window: WebviewWindow) -> Result<(), String> {
+    window.minimize().map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn window_toggle_maximize(window: WebviewWindow) -> Result<bool, String> {
+    if window.is_maximized().map_err(|e| e.to_string())? {
+        window.unmaximize().map_err(|e| e.to_string())?;
+        Ok(false)
+    } else {
+        window.maximize().map_err(|e| e.to_string())?;
+        Ok(true)
+    }
+}
+
+#[tauri::command]
+pub async fn window_close(app: AppHandle, window: WebviewWindow) -> Result<(), String> {
+    let close_to_tray = if let Ok(store) = app.store("settings.json") {
+        store
+            .get("close_to_tray")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true)
+    } else {
+        true
+    };
+
+    if close_to_tray {
+        window.hide().map_err(|e| e.to_string())?;
+    } else {
+        app.exit(0);
+    }
+    Ok(())
+}
