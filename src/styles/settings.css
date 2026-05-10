@@ -201,3 +201,26 @@ input[type="url"]:focus {
 .primary:hover {
   opacity: 0.9;
 }
+
+/* Secondary buttons (e.g. Clear cache) */
+#clear_cache {
+  background: #313244;
+  color: #cdd6f4;
+  border: 1px solid #45475a;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+#clear_cache:hover {
+  background: #45475a;
+  border-color: #585b70;
+}
+
+#clear_cache:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

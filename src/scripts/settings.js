@@ -24,6 +24,7 @@
   const zoomUp = document.getElementById("zoom_up");
   const startUrl = document.getElementById("start_url");
   const saveBtn = document.getElementById("save");
+  const clearCacheBtn = document.getElementById("clear_cache");
   const versionEl = document.getElementById("version");
 
   let currentZoom = 1.0;
@@ -78,6 +79,17 @@
     if (getCurrentWindow) {
       getCurrentWindow().close();
     }
+  });
+
+  // Clear cache
+  clearCacheBtn.addEventListener("click", async () => {
+    clearCacheBtn.disabled = true;
+    clearCacheBtn.textContent = "Cleared";
+    await invoke("clear_cache");
+    setTimeout(() => {
+      clearCacheBtn.disabled = false;
+      clearCacheBtn.textContent = "Clear";
+    }, 1500);
   });
 
   // Show version

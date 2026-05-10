@@ -50,26 +50,10 @@ pub fn init(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
     let main_window = builder.build()?;
 
-    // Linux: allow third-party cookies so Microsoft silent auth (iframe-based
-    // token refresh) doesn't get stuck in an infinite "We couldn't sign you in" loop.
-    #[cfg(target_os = "linux")]
-    {
-        use webkit2gtk::{
-            CookieAcceptPolicy, CookieManagerExt, WebContextExt, WebViewExt,
-            WebsiteDataManagerExt,
-        };
-        let _ = main_window.with_webview(|webview| {
-            let wv = webview.inner();
-            if let Some(context) = wv.web_context() {
-                if let Some(data_manager) = context.website_data_manager() {
-                    if let Some(cookie_manager) = data_manager.cookie_manager() {
-                        cookie_manager.set_accept_policy(CookieAcceptPolicy::Always);
-                        eprintln!("[Linnote] Linux: cookie accept policy set to Always");
-                    }
-                }
-            }
-        });
-    }
+    // Linux: tune WebKit for aggressive caching and auth-friendly cookies.
+    // This prevents the "We couldn't sign you in" loop by disabling ITP
+    // (which purges auth cookies) and allowing third-party cookies.
+    crate::performance::configure_webview(&main_window);
 
     // Restore zoom level if not default
     if (zoom_level - 1.0).abs() > f64::EPSILON {

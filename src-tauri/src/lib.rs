@@ -2,6 +2,7 @@ use tauri::Manager;
 
 mod commands;
 mod config;
+mod performance;
 mod setup;
 mod tray;
 
@@ -40,6 +41,7 @@ pub fn run() {
             commands::window::get_zoom,
             commands::settings::get_setting,
             commands::settings::set_setting,
+            commands::performance::clear_cache,
         ])
         .run(tauri::generate_context!())
         .expect("error while running linnote");
