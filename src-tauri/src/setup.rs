@@ -66,12 +66,6 @@ pub fn init(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
             }
         });
 
-    // Linux: use a custom title bar instead of the native GTK decorations.
-    #[cfg(target_os = "linux")]
-    {
-        builder = builder.decorations(false);
-    }
-
     // Only set visible if not starting minimized
     if start_minimized {
         builder = builder.visible(false);
