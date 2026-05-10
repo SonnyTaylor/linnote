@@ -1,4 +1,5 @@
 use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri::webview::PageLoadEvent;
 use tauri_plugin_store::StoreExt;
 
 use crate::config;
@@ -41,6 +42,28 @@ pub fn init(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
                 eprintln!("[Linnote] Nav BLOCKED: {} -> {}", host, url);
             }
             allowed
+        })
+        .on_page_load({
+            let app_handle = handle.clone();
+            move |_window, payload| {
+                if payload.event() == PageLoadEvent::Finished {
+                    let url = payload.url();
+                    if config::is_allowed_domain(url) {
+                        let path = url.path().to_lowercase();
+                        let is_auth = path.contains("/oauth")
+                            || path.contains("/auth")
+                            || path.contains("/login")
+                            || path.contains("/saml")
+                            || path.contains("/wsfed")
+                            || path.contains("/adfs");
+                        if !is_auth {
+                            if let Ok(store) = app_handle.store("settings.json") {
+                                store.set("last_url", serde_json::json!(url.to_string()));
+                            }
+                        }
+                    }
+                }
+            }
         });
 
     // Linux: use a custom title bar instead of the native GTK decorations.
@@ -99,7 +122,16 @@ pub fn init(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
 fn get_start_url(app: &AppHandle) -> String {
     if let Ok(store) = app.store("settings.json") {
+        // 1. User-configured start URL always takes priority
         if let Some(url) = store.get("start_url") {
+            if let Some(s) = url.as_str() {
+                if !s.is_empty() {
+                    return s.to_string();
+                }
+            }
+        }
+        // 2. Otherwise restore the last visited page
+        if let Some(url) = store.get("last_url") {
             if let Some(s) = url.as_str() {
                 if !s.is_empty() {
                     return s.to_string();
